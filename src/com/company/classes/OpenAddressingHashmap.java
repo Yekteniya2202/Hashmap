@@ -115,6 +115,8 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
     @Override
     public V remove(Object key) {
         filledSize--;
+        if (containsKey(key) == false)
+            return null;
         return removeFrom((K)key, table, isDeleted);
     }
 

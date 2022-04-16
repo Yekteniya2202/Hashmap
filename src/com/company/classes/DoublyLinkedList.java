@@ -14,7 +14,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
 
     @Override
     public boolean isEmpty() {
-        return this.size == 0 || front == null;
+        return this.size == 0;
     }
 
     @Override
@@ -65,19 +65,19 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         if (isEmpty()){
             front = new ListNode<K, V>(key, value, null, null);
             this.size++;
-            return value;
+            return front.value;
         }
         var tmp = front;
         while(tmp.next != null){
             if (tmp.key.equals(key)) {
                 tmp.value = value;
-                return value;
+                return tmp.value;
             }
             tmp = tmp.next;
         }
         tmp.next = new ListNode<K, V>(key, value, null, tmp);
         this.size++;
-        return value;
+        return tmp.value;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
             return null;
 
         //нашли
-        if(tmp.equals(front)){
+        if(tmp.equals(front) && tmp.key.equals(key)){
             if (size == 1){
                 front = null;
                 size--;
