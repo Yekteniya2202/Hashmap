@@ -3,20 +3,41 @@ package com.company.classes;
 import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import java.util.*;
 
+/**
+ * Object of class <code>DoublyLinkedList</code> represents Linked list, implements <code>Map</code>
+ * @param <K> - key
+ * @param <V> - value
+ * @author Michael Babaev
+ * @since 1.0
+ * @version First implementation
+ */
 public class DoublyLinkedList <K, V> implements Map<K, V> {
     private ListNode<K, V> front;
     private int size = 0;
 
+    /**
+     * Method <code>size()</code>
+     * @return size of <code>DoublyLinkedList</code>
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * Method <code>isEmpty()</code>
+     * @return <code>true</code>, if <code>DoublyLinkedList</code> has no <code>ListNode</code>, otherwise <code>false</code>
+     */
     @Override
     public boolean isEmpty() {
         return this.size == 0;
     }
 
+    /**
+     * Method <code>containsKey(Object key)</code>
+     * @param key - represents <code>Object</code> key to find in <code>DoublyLinkedList</code>
+     * @return <code>true</code>, if <code>DoublyLinkedList</code> contains key, otherwise <code>false</code>
+     */
     @Override
     public boolean containsKey(Object key) {
         if (isEmpty())
@@ -31,6 +52,11 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return false;
     }
 
+    /**
+     * Method <code>containsValue(Object value)</code>
+     * @param value - represents <code>Object</code> value to find in <code>DoublyLinkedList</code>
+     * @return <code>true</code>, if <code>DoublyLinkedList</code> contains value, otherwise <code>false</code>
+     */
     @Override
     public boolean containsValue(Object value) {
         if (isEmpty())
@@ -45,6 +71,11 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return false;
     }
 
+    /**
+     * Method <code>get()</code>
+     * @param key - represents <code>Object</code> key, assosiated with value
+     * @return V value, if key is assosiated with this value, otherwise <code>null</code>
+     */
     @Override
     public V get(Object key) {
         if (isEmpty())
@@ -59,10 +90,18 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return null;
     }
 
+    /**
+     * Method <code>put(K key, V value)</code>
+     * @param key - represents key, assosiated with value
+     * @param value - just value
+     * @return old value, if node was modified, otherwise this value
+     */
     @Override
     public V put(K key, V value) {
 
+        //if empty
         if (isEmpty()){
+            //make new node
             front = new ListNode<K, V>(key, value, null, null);
             this.size++;
             return front.value;
@@ -70,8 +109,11 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         var tmp = front;
         while(tmp.next != null){
             if (tmp.key.equals(key)) {
+                //if value changes
+                V toReturn = tmp.value;
                 tmp.value = value;
-                return tmp.value;
+                //return value
+                return toReturn;
             }
             tmp = tmp.next;
         }
@@ -80,6 +122,11 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return tmp.value;
     }
 
+    /**
+     * Method <code>remove(Object key)</code>
+     * @param key - represents <code>Object</code> key, assosiated with value
+     * @return value, that was successfully removed, otherwise <code>null</code>
+     */
     @Override
     public V remove(Object key) {
         if (isEmpty())
@@ -119,21 +166,34 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return tmp.value;
     }
 
+    /**
+     * Method <code>putAll(Map m)</code> is not implemented through it's unnecessary
+     * Overriding is necessary to implement <code>Map</code> interface
+     */
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
 
     }
 
+    /**
+     * Method <code>clear()</code> clears <code>DoubleLinkedList</code>, making <code>front</code> <code>null</code>, <code>size</code> = 0
+     */
     @Override
     public void clear() {
         front = null;
         size = 0;
     }
 
+    /**
+     * Method <code>keySet()</code>
+     * @return immutable keySet of <code>DoubleLinkedList</code>
+     */
     @Override
     public Set<K> keySet() {
         if (isEmpty())
             return null;
+
+        //immutable?
         Set<K> keySet = new HashSet<>();
         var tmp = front;
         while(tmp != null){
@@ -142,6 +202,10 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return keySet;
     }
 
+    /**
+     * Method <code>values()</code>
+     * @return mutable velue collection of <code>DoubleLinkedList</code>
+     */
     @Override
     public Collection<V> values() {
         if (isEmpty())
@@ -154,20 +218,42 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         return valueList;
     }
 
+    /**
+     * Method <code>entrySet()</code>
+     * @return immutable set of entries of <code>DoubleLinkedList</code>
+     */
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return null;
+        if (isEmpty())
+            return null;
+
+        //immutable?
+        Set<Entry<K, V>> keySet = new HashSet<Entry<K, V>>();
+        var tmp = front;
+        while(tmp != null){
+            //Implementation of Map.Entry (Abstract?)
+            keySet.add(new AbstractMap.SimpleEntry<> (tmp.key, tmp.value));
+        }
+        return keySet;
+
     }
 
-    public void printForward() {
+    /**
+     * Method <code>toString()</code> overrides the <code>Object.toString()</code>
+     * @return String in format [{1, "abc"}, {2, "qwer"}, ...]
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
         if(isEmpty()){
-            return;
+            return "";
         }
         var tmp = front;
         while(tmp != null){
-            System.out.print("{" + tmp.key + "," + tmp.value + "}" + " < = > ");
+            sb.append("{" + tmp.key + "," + tmp.value + "}");
             tmp = tmp.next;
         }
-        System.out.println();
+        sb.append("]");
+        return sb.toString();
     }
 }

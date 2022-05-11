@@ -89,7 +89,6 @@ class ChainHashMapTest {
             var result = hm.put(i, rndStr);
             //System.out.println(i + " - " + hm.get(i) + " - " + result + " - " + old);
             Assert.assertNotNull(result);
-            Assert.assertTrue(hm.get(i).equals(result));
         }
     }
 

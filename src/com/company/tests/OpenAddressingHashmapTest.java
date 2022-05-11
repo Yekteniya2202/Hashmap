@@ -1,7 +1,5 @@
 package com.company.tests;
 
-import com.company.classes.ChainHashMap;
-import com.company.classes.KeyValue;
 import com.company.classes.OpenAddressingHashmap;
 import org.junit.Assert;
 
@@ -9,13 +7,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class OpenAddressingHashmapTest {
     @org.junit.jupiter.api.Test
     void containsKey() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
             var result = hm.put(i, rndStr);
@@ -29,8 +24,7 @@ class OpenAddressingHashmapTest {
 
     @org.junit.jupiter.api.Test
     void containsValue() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
         ArrayList<String> added = new ArrayList<>();
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
@@ -46,8 +40,7 @@ class OpenAddressingHashmapTest {
 
     @org.junit.jupiter.api.Test
     void get() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
             var result = hm.put(i, rndStr);
@@ -62,8 +55,7 @@ class OpenAddressingHashmapTest {
 
     @org.junit.jupiter.api.Test
     void putUniqueKeys() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
 
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
@@ -78,8 +70,7 @@ class OpenAddressingHashmapTest {
 
     @org.junit.jupiter.api.Test
     void putNonUniqueKeys(){
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
 
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
@@ -93,14 +84,13 @@ class OpenAddressingHashmapTest {
             var result = hm.put(i, rndStr);
             //System.out.println(i + " - " + hm.get(i) + " - " + result + " - " + old);
             Assert.assertNotNull(result);
-            Assert.assertTrue(hm.get(i).equals(result));
+            //Assert.assertTrue(hm.get(i).equals(result));
         }
     }
 
     @org.junit.jupiter.api.Test
     void removeUniqueKeys() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
 
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
@@ -110,7 +100,7 @@ class OpenAddressingHashmapTest {
 
 
         for(int i = -1000; i <= 1000; i++){
-            hm.remove(i);
+            Assert.assertNotNull(hm.remove(i));
         }
 
         for(int i = -1000; i <= 1000; i++){
@@ -121,8 +111,7 @@ class OpenAddressingHashmapTest {
 
     @org.junit.jupiter.api.Test
     void removeNonUniqueKeys() {
-        KeyValue<Integer, String> clazz = new KeyValue<>();
-        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(clazz.getClass(), 13);
+        Map<Integer, String> hm = new OpenAddressingHashmap<Integer, String>(5);
 
         for(int i = -1000; i <= 1000; i++){
             String rndStr = getRandomString(random, "qwerty", 20);
