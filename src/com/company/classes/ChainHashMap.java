@@ -15,12 +15,13 @@ public class ChainHashMap<K, V> implements Map<K, V> {
 
     private DoublyLinkedList<K, V>[] chains = null;
 
+    private int elemsCount = 0;
     /**
      * Constructor initialises array of chains
-     * @param size - number of chains
+     * @param sizeOfTable - number of chains
      */
-    public ChainHashMap(int size){
-        chains = new DoublyLinkedList[size];
+    public ChainHashMap(int sizeOfTable){
+        chains = new DoublyLinkedList[sizeOfTable];
         for(int i = 0; i < chains.length; i++){
             chains[i] = new DoublyLinkedList<>();
         }
@@ -37,11 +38,11 @@ public class ChainHashMap<K, V> implements Map<K, V> {
 
     /**
      * Method <code>size()</code>
-     * @return the size of chains array
+     * @return the size of represented elements
      */
     @Override
     public int size() {
-        return chains.length;
+        return elemsCount;
     }
 
     /**
@@ -50,11 +51,7 @@ public class ChainHashMap<K, V> implements Map<K, V> {
      */
     @Override
     public boolean isEmpty() {
-        for(int i = 0; i < chains.length; i++){
-            if (chains[i].size() != 0)
-                return false;
-        }
-        return true;
+        return elemsCount == 0;
     }
 
     /**
@@ -103,7 +100,12 @@ public class ChainHashMap<K, V> implements Map<K, V> {
     @Override
     public V put(K key, V value) {
         int hash = hash(key);
-        return chains[hash % chains.length].put(key, value);
+        var putSuccessValue = chains[hash % chains.length].put(key, value);
+        if (putSuccessValue != null){
+            elemsCount++;
+            return putSuccessValue;
+        }
+        return null;
     }
 
     /**
@@ -114,18 +116,26 @@ public class ChainHashMap<K, V> implements Map<K, V> {
     @Override
     public V remove(Object key) {
         int hash = hash((K)key);
-        return chains[hash % chains.length].remove((K)key);
+        var removeSuccessValue = chains[hash % chains.length].remove(key);
+        if (removeSuccessValue != null){
+            elemsCount--;
+            return removeSuccessValue;
+        }
+        return null;
     }
 
     /**
      * Method <code>putAll(Map m)</code> puts every entry to <code>ChainHashMap</code>
-     * @param m - entries to put
+     * @param map - entries to put
      */
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-        for(var entry : m.entrySet()){
-            int hash = hash(entry.getKey());
-            chains[hash % chains.length].put(entry.getKey(), entry.getValue());
+    public void putAll(Map<? extends K, ? extends V> map) {
+        var mapClone = Map.copyOf(map);
+        for(var entryClone : mapClone.entrySet()){
+            int hash = hash(entryClone.getKey());
+            if (chains[hash % chains.length].put(entryClone.getKey(), entryClone.getValue()) != null){
+                elemsCount++;
+            }
         }
     }
 
@@ -136,9 +146,9 @@ public class ChainHashMap<K, V> implements Map<K, V> {
     @Override
     public void clear() {
         for(int i = 0; i < chains.length; i++){
-            //как прокинуть тип?
             chains[i] = new DoublyLinkedList<>();
         }
+        elemsCount = 0;
     }
 
     /**
@@ -161,11 +171,11 @@ public class ChainHashMap<K, V> implements Map<K, V> {
      */
     @Override
     public Collection<V> values() {
-        Collection<V> valueSet = new ArrayList<>();
+        Collection<V> valueCollection = new ArrayList<>();
         for(int i = 0; i < chains.length; i++){
-            valueSet.addAll(chains[i].values());
+            valueCollection.addAll(chains[i].values());
         }
-        return valueSet;
+        return valueCollection;
     }
 
 
@@ -175,11 +185,11 @@ public class ChainHashMap<K, V> implements Map<K, V> {
      */
     @Override
     public Set<Entry<K, V>> entrySet() {
-        Set<Entry<K, V>> es = new HashSet<>();
+        Set<Entry<K, V>> entrySet = new HashSet<>();
         for(int i = 0; i < chains.length; i++){
-            es.addAll(chains[i].entrySet());
+            entrySet.addAll(chains[i].entrySet());
         }
-        return es;
+        return entrySet;
     }
 
     /**
@@ -187,13 +197,13 @@ public class ChainHashMap<K, V> implements Map<K, V> {
      * @return String in format ([{1, "abc"}, {2, "qwer"}, ...] [{10, "abc"}, {20, "qwer"}, ...] ...)
      */
     public String toString(){
-        StringBuilder sb  =new StringBuilder("(");
+        StringBuilder formatViewBuilder  =new StringBuilder("(");
         for(int i = 0; i < chains.length; i++){
             if(chains[i].size() != 0) {
-                sb.append(chains[i]);
+                formatViewBuilder.append(chains[i]);
             }
         }
-        sb.append(")");
-        return sb.toString();
+        formatViewBuilder.append(")");
+        return formatViewBuilder.toString();
     }
 }

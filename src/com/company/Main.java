@@ -7,6 +7,9 @@ public class Main {
     public static void main(String[] args) {
 
 
+        String s = "";
+        Integer i = Integer.valueOf(3);
+        s.getClass().equals(i);
         OpenAddressingHashmap<Integer, String> hashMap = new OpenAddressingHashmap<>(4);
 
         hashMap.put(0, "qwe");

@@ -1,6 +1,5 @@
 package com.company.classes;
 
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import java.util.*;
 
 /**
@@ -13,7 +12,7 @@ import java.util.*;
  */
 public class DoublyLinkedList <K, V> implements Map<K, V> {
     private ListNode<K, V> front;
-    private int size = 0;
+    private int elemsCount = 0;
 
     /**
      * Method <code>size()</code>
@@ -21,7 +20,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
      */
     @Override
     public int size() {
-        return size;
+        return elemsCount;
     }
 
     /**
@@ -30,7 +29,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
      */
     @Override
     public boolean isEmpty() {
-        return this.size == 0;
+        return elemsCount == 0;
     }
 
     /**
@@ -103,7 +102,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
         if (isEmpty()){
             //make new node
             front = new ListNode<K, V>(key, value, null, null);
-            this.size++;
+            this.elemsCount++;
             return front.value;
         }
         var tmp = front;
@@ -118,7 +117,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
             tmp = tmp.next;
         }
         tmp.next = new ListNode<K, V>(key, value, null, tmp);
-        this.size++;
+        this.elemsCount++;
         return tmp.value;
     }
 
@@ -144,35 +143,35 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
 
         //нашли
         if(tmp.equals(front) && tmp.key.equals(key)){
-            if (size == 1){
-                front = null;
-                size--;
-                return tmp.value;
-            }
-            front = tmp.next;
             front.prev = null;
-            size--;
+            front = tmp.next;
+            elemsCount--;
             return tmp.value;
         }
         if(tmp.next == null) {
             tmp.prev.next = null;
-            size--;
+            elemsCount--;
             return tmp.value;
         }
 
         tmp.prev.next = tmp.next;
         tmp.next.prev = tmp.prev;
-        size--;
+        elemsCount--;
         return tmp.value;
     }
 
     /**
-     * Method <code>putAll(Map m)</code> is not implemented through it's unnecessary
-     * Overriding is necessary to implement <code>Map</code> interface
+     * Method <code>putAll(Map m)</code> puts every entry to <code>DoublyLinkedList</code>
+     * @param map - entries to put
      */
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-
+    public void putAll(Map<? extends K, ? extends V> map) {
+        var mapClone = Map.copyOf(map);
+        for (var entryClone : mapClone.entrySet()){
+            if (put(entryClone.getKey(), entryClone.getValue()) != null){
+                elemsCount++;
+            }
+        }
     }
 
     /**
@@ -181,7 +180,7 @@ public class DoublyLinkedList <K, V> implements Map<K, V> {
     @Override
     public void clear() {
         front = null;
-        size = 0;
+        elemsCount = 0;
     }
 
     /**

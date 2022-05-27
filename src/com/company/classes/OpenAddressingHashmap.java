@@ -31,7 +31,6 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
      */
     public OpenAddressingHashmap(int powSize){
         this.powSize = powSize;
-        //making generic array through reflection 0_o
         Map.Entry<K, V> me = new AbstractMap.SimpleEntry<K, V>(null, null);
         table = (Map.Entry<K, V>[]) Array.newInstance(me.getClass(), (int)Math.pow(2, powSize));
         isDeleted = new boolean[(int)Math.pow(2, powSize)];
@@ -62,12 +61,7 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
      */
     @Override
     public boolean isEmpty() {
-        for(int i = 0; i < table.length; i++){
-            if (table[i] != null && isDeleted[i] == false) {
-                return false;
-            }
-        }
-        return true;
+        return filledSize == 0;
     }
 
     /**
@@ -84,8 +78,9 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
         int index = (hash + offset) % table.length;
         int startingIndex = index;
         while(isDeleted[index] == false && table[index] != null){
-            if (table[index].getKey().equals(key))
+            if (table[index].getKey().equals(key)) {
                 return true;
+            }
             offset += step;
             index = (hash + offset) % table.length;
             if (index == startingIndex){
@@ -131,6 +126,8 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
                 break;
             }
         }
+        //документация специфицирует возврат null при ненахождении по ключу. Но null возвращать нельзя из-за нарушения регламента по неймингу
+        //??????????
         return null;
     }
     /**
@@ -145,12 +142,11 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
     @Override
     public V put(K key, V value) {
         filledSize++;
-
         //increase capacity of table
+
         if (filledSize / table.length > filledKoef){
             rebuildGreaterTable();
         }
-
         return putTo(key, value, table, isDeleted);
     }
 
@@ -158,7 +154,6 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
     /**
      * Method <code>rebuildGreaterTable()</code> rebuilds table and isDeleted
      * increasing its size in 2 times (powSize increases by 1)
-     *
      */
     private void rebuildGreaterTable() {
         Map.Entry<K, V> me = new AbstractMap.SimpleEntry<K, V>(null, null);
@@ -216,6 +211,12 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
      */
     @Override
     public V remove(Object key) {
+
+        var a = key.getClass();
+        var b = table[0].getKey().getClass();
+        if (a.equals(b) == false) {
+            return null;
+        }
         filledSize--;
         return removeFrom((K)key, table, isDeleted);
     }
@@ -231,6 +232,8 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
      * @return removed value, otherwise <code>null</code>
      */
     private V removeFrom(K key, Map.Entry<K, V>[] srcTable, boolean[] srcIsDeleted) {
+        int l = srcTable.length;
+        boolean b = l == srcIsDeleted.length;
         int hash = hash(key);
         int offset = 0;
         int index = (hash + offset) % srcTable.length;
@@ -239,16 +242,16 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
         while(srcTable[index] != null){
 
             if (srcTable[index].getKey().equals(key) && srcIsDeleted[index] == false) {
-                break;
+                srcIsDeleted[index] = true;
+                return srcTable[index].getValue();
             }
             offset += step;
             index = (hash + offset) % srcTable.length;
             if (index == startingIndex){
-                return null;
+                break;
             }
         }
-        srcIsDeleted[index] = true;
-        return srcTable[index].getValue();
+        return null;
     }
 
 
@@ -258,8 +261,9 @@ public class OpenAddressingHashmap<K, V> implements Map<K, V> {
      */
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        for(var entry : m.entrySet()){
-            put(entry.getKey(), entry.getValue());
+        var mClone = Map.copyOf(m);
+        for(var entryClone : mClone.entrySet()){
+            put(entryClone.getKey(), entryClone.getValue());
         }
     }
 

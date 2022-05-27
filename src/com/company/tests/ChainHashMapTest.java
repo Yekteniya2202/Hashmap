@@ -134,6 +134,32 @@ class ChainHashMapTest {
 
     }
 
+    @org.junit.jupiter.api.Test
+    void size() {
+        Map<Integer, String> hm = new ChainHashMap<>(30);
+
+        for(int i = -1000; i <= 1000; i++){
+            String rndStr = getRandomString(random, "qwerty", 20);
+            var result = hm.put(i, rndStr);
+            Assert.assertNotNull(result);
+        }
+
+        Assert.assertTrue(hm.size() == 2001);
+
+        for(int i = 0; i <= 1000; i++){
+            hm.remove(i);
+        }
+        Assert.assertTrue(hm.size() == 1000);
+
+        for(int i = 0; i <= 1000; i++){
+            Assert.assertNull(hm.remove(i));
+        }
+
+        hm.clear();
+        Assert.assertTrue(hm.size() == 0);
+        Assert.assertTrue(hm.isEmpty());
+    }
+
     Random random = new Random();
     private static String getRandomString(Random rng, String characters, int size){
         char[] text = new char[size];
